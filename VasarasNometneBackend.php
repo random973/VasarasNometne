@@ -753,17 +753,6 @@ input:focus,textarea:focus {
         <div class="notice">✓ <?= h($message) ?></div>
     <?php endif; ?>
 
-    <?php if ($errors): ?>
-        <div class="notice error">
-            <strong>Neizdevās saglabāt:</strong>
-            <ul>
-                <?php foreach ($errors as $error): ?>
-                    <li><?= h($error) ?></li>
-                <?php endforeach; ?>
-            </ul>
-        </div>
-    <?php endif; ?>
-
     <div class="stats">
         <div class="stat">
             <span>Kopā nometnes</span>
@@ -910,6 +899,17 @@ input:focus,textarea:focus {
                 Ievadi nometnes pamatinformāciju.
             </p>
         </div>
+
+        <?php if ($errors && ($_POST['action'] ?? '') === 'save_camp'): ?>
+        <div class="notice error">
+            <strong>Neizdevās saglabāt:</strong>
+            <ul>
+                <?php foreach ($errors as $error): ?>
+                    <li><?= h($error) ?></li>
+                <?php endforeach; ?>
+            </ul>
+        </div>
+        <?php endif; ?>
 
         <form method="post" action="slepeni.php#camp-form">
             <input type="hidden" name="csrf" value="<?= h($csrf) ?>">
