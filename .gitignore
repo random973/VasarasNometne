@@ -1,5 +1,5 @@
 # Datubāzes piekļuves dati un lokālā konfigurācija
-db.php
+secrets.php
 .env
 .env.*
 !.env.example
