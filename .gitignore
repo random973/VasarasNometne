@@ -1,0 +1,30 @@
+# Datubāzes piekļuves dati un lokālā konfigurācija
+db.php
+.env
+.env.*
+!.env.example
+config.local.php
+
+# Privātās atslēgas
+*.key
+*.pem
+*.p12
+*.pfx
+
+# Datubāzes rezerves kopijas un reālo datu eksporti
+/backups/
+/database/backups/
+/database/dumps/
+/database/exports/
+*.sql.gz
+
+# Lietotāju augšupielādētie faili un žurnāli
+/uploads/
+/logs/
+*.log
+
+# Redaktoru un operētājsistēmas faili
+/.idea/
+/.vscode/
+.DS_Store
+Thumbs.db
