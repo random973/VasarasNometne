@@ -5,6 +5,9 @@ secrets.php
 !.env.example
 config.local.php
 
+# Lokāls izstrādes rīks (nepublicēt serverī)
+hashgen.php
+
 # Privātās atslēgas
 *.key
 *.pem
