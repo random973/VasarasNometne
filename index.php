@@ -375,6 +375,20 @@ input:focus {
     text-align:center;
 }
 
+.privacy-links {
+    margin:10px 0 0;
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:center;
+    gap:6px 14px;
+    font-size:.78rem;
+}
+.privacy-links a { color:#a22a20; text-decoration:underline; }
+.privacy-links a:focus-visible {
+    outline:2px solid var(--orange);
+    outline-offset:3px;
+}
+
 @media(max-width:480px) {
     .card { padding:22px 18px; }
     .brand-tag { font-size:.58rem; }
@@ -483,6 +497,10 @@ input:focus {
     <?php endif; ?>
 
     <p class="footnote">Nometņu pārvaldības sistēma</p>
+    <nav class="privacy-links" aria-label="Privātuma informācija">
+        <a href="privatums.php#privatuma-politika">Privātuma politika</a>
+        <a href="privatums.php#sikdatnes">Sīkdatņu politika</a>
+    </nav>
 
 </div>
 </body>
