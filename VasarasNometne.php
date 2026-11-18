@@ -54,6 +54,27 @@ $result = mysqli_query(
 while ($row = mysqli_fetch_assoc($result)) {
     $camps[] = $row;
 }
+
+// Publiskie attēli: nelasa pašus BLOB datus, tikai to metadatus.
+$gallery = [];
+$campCovers = [];
+try {
+    $result = mysqli_query($conn, 'SELECT g.id, g.camp_id, g.alt_text, g.width, g.height
+        FROM mm_gallery_images g LEFT JOIN mm_camps c ON c.id = g.camp_id
+        WHERE g.is_published = 1 AND (g.camp_id IS NULL OR c.is_published = 1)
+        ORDER BY g.id DESC LIMIT 60');
+    if ($result) {
+        while ($row = mysqli_fetch_assoc($result)) {
+            $gallery[] = $row;
+            if ($row['camp_id'] !== null && !isset($campCovers[$row['camp_id']])) {
+                $campCovers[$row['camp_id']] = $row;
+            }
+        }
+    }
+} catch (mysqli_sql_exception $e) {
+    // Sākumlapa darbojas arī pirms galerijas migrācijas.
+    error_log('Galerijas metadatu nolasīšana neizdevās.');
+}
 ?>
 
 <!DOCTYPE html>
@@ -281,6 +302,20 @@ h1 {
     box-shadow:0 8px 24px rgba(45,30,25,.035);
 }
 
+.camp-image {
+    display:block;
+    width:100%;
+    height:165px;
+    object-fit:cover;
+}
+.gallery-photo {
+    display:block;
+    width:100%;
+    height:auto;
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    background:#fff;
+}
 .card-body { padding:22px; }
 .card h3 { margin-bottom:8px; }
 
@@ -525,9 +560,13 @@ details p {
 
                         <article class="card">
 
-                            <div class="image-placeholder">
-                                Nometnes attēls būs vēlāk
-                            </div>
+                            <?php if (isset($campCovers[$camp['id']])): $cover = $campCovers[$camp['id']]; ?>
+                                <img class="camp-image" src="attels.php?id=<?= (int)$cover['id'] ?>"
+                                     alt="<?= h($cover['alt_text']) ?>" width="<?= (int)$cover['width'] ?>"
+                                     height="<?= (int)$cover['height'] ?>" loading="lazy">
+                            <?php else: ?>
+                                <div class="image-placeholder">Nometnes attēls būs vēlāk</div>
+                            <?php endif; ?>
 
                             <div class="card-body">
 
@@ -590,14 +629,20 @@ details p {
 
             <h2>Galerija</h2>
             <p class="section-intro">
-                Foto un video no nometņu piedzīvojumiem.
+                Foto no nometņu piedzīvojumiem.
             </p>
 
-            <div class="grid-3">
-                <div class="gallery-placeholder">Foto / video 1</div>
-                <div class="gallery-placeholder">Foto / video 2</div>
-                <div class="gallery-placeholder">Foto / video 3</div>
-            </div>
+            <?php if (!$gallery): ?>
+                <div class="plain-box">Galerijā vēl nav publicētu attēlu.</div>
+            <?php else: ?>
+                <div class="grid-3">
+                    <?php foreach ($gallery as $image): ?>
+                        <img class="gallery-photo" src="attels.php?id=<?= (int)$image['id'] ?>"
+                             alt="<?= h($image['alt_text']) ?>" width="<?= (int)$image['width'] ?>"
+                             height="<?= (int)$image['height'] ?>" loading="lazy">
+                    <?php endforeach; ?>
+                </div>
+            <?php endif; ?>
 
         </div>
     </section>

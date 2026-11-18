@@ -95,6 +95,14 @@ footer a { color:#ffc19c; }
         mēģinājuma laiks un bloķēšanas termiņš. Serveris var apstrādāt arī
         pieprasījumu tehniskos datus, piemēram, IP adresi un pieprasījuma laiku.</p>
 
+        <p>Galerijā administrators var augšupielādēt attēlus un to alternatīvos
+        aprakstus. Attēli tiek pārkodēti un saglabāti datubāzē; sākotnēji tie
+        nav publiski. Pirms publicēšanas jāpārbauda attēla izmantošanas
+        tiesiskais pamats un nepieciešamās atļaujas, īpaši bērnu attēliem.
+        Oriģinālais fails un tā metadati netiek saglabāti. Publicētu attēlu
+        iespējams paslēpt vai dzēst, taču apmeklētāju jau saglabātās kopijas
+        tas neatsauc. Glabāšanas termiņi un rezerves kopiju politika jāprecizē.</p>
+
         <h3>3. Tiesiskie pamati, glabāšana un saņēmēji</h3>
         <p>Autentifikācijas un drošības datu apstrādes tiesiskais pamats
         atbilstoši Vispārīgās datu aizsardzības regulas 6. pantam

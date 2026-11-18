@@ -720,6 +720,7 @@ input:focus,textarea:focus {
         <a href="#saturs">✎ Lapas saturs</a>
         <a href="#nometnes">⛺ Nometnes</a>
         <a href="#camp-form">＋ Pievienot nometni</a>
+        <a href="gallery_admin.php">▣ Galerija</a>
         <a href="VasarasNometne.php">↗ Publiskā lapa</a>
     </nav>
 
@@ -855,6 +856,7 @@ input:focus,textarea:focus {
                            href="?edit=<?= (int)$camp['id'] ?>#camp-form">
                             Labot
                         </a>
+                        <a class="btn secondary small" href="gallery_admin.php?camp=<?= (int)$camp['id'] ?>">Attēli</a>
 
                         <form method="post" action="slepeni.php#nometnes">
                             <input type="hidden" name="csrf" value="<?= h($csrf) ?>">
