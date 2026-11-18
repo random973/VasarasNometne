@@ -28,6 +28,10 @@ function textLength(string $value): int {
 }
 
 function validDate(string $date): bool {
+    if (!preg_match('/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/D', $date)) {
+        return false;
+    }
+
     $d = DateTimeImmutable::createFromFormat('!Y-m-d', $date);
     return $d !== false && $d->format('Y-m-d') === $date;
 }
@@ -56,6 +60,8 @@ $fields = [
 $errors = [];
 $draftContent = null;
 $draftCamp = null;
+$today = date('Y-m-d');
+$maxDate = (date('Y') + 15) . '-12-31';
 
 // POST pieprasījumu apstrāde
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -126,19 +132,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             FILTER_VALIDATE_INT
         );
         
-        $startDate = sprintf(
-        '%04d-%02d-%02d',
-        (int)($_POST['start_year'] ?? 0),
-        (int)($_POST['start_month'] ?? 0),
-        (int)($_POST['start_day'] ?? 0)
-        );
-
-        $endDate = sprintf(
-        '%04d-%02d-%02d',
-        (int)($_POST['end_year'] ?? 0),
-        (int)($_POST['end_month'] ?? 0),
-        (int)($_POST['end_day'] ?? 0)
-        );
+        $startDate = is_string($_POST['start_date'] ?? null) ? $_POST['start_date'] : '';
+        $endDate = is_string($_POST['end_date'] ?? null) ? $_POST['end_date'] : '';
 
         $price = str_replace(
             ',',
@@ -194,9 +189,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if (
             validDate($startDate) &&
-            $startDate < date('Y-m-d')
+            $startDate < $today
         ) {
             $errors[] = 'Nometnes sākuma datums nevar būt pagātnē.';
+        }
+
+        if (
+            (validDate($startDate) && $startDate > $maxDate) ||
+            (validDate($endDate) && $endDate > $maxDate)
+        ) {
+            $errors[] = 'Nometnes datums ir pārāk tālu nākotnē.';
         }
 
         if (!preg_match('/^\d{1,6}(\.\d{1,2})?$/', $price)) {
@@ -550,15 +552,9 @@ textarea {
     color:var(--ink);
 }
 
-.date-parts {
-    display:grid;
-    grid-template-columns:0.8fr 1.5fr 1fr;
-    gap:8px;
-}
-
-.date-parts select,
-.date-parts input {
+input[type=date] {
     min-width:0;
+    max-width:100%;
 }
 
 textarea { resize:vertical; min-height:96px; }
@@ -946,85 +942,21 @@ input:focus,textarea:focus {
                 </div>
             </div>
 
-            <?php
-            $months = [
-                1 => 'Janvāris', 2 => 'Februāris',
-                3 => 'Marts', 4 => 'Aprīlis',
-                5 => 'Maijs', 6 => 'Jūnijs',
-                7 => 'Jūlijs', 8 => 'Augusts',
-                9 => 'Septembris', 10 => 'Oktobris',
-                11 => 'Novembris', 12 => 'Decembris'
-            ];
-
-            $dateFields = [
-                'start' => 'Sākuma datums',
-                'end' => 'Beigu datums'
-            ];
-            ?>
-
             <div class="fields-2">
-                <?php foreach ($dateFields as $prefix => $label): ?>
+                <div class="field">
+                    <label for="start_date">Sākuma datums</label>
+                    <input type="date" id="start_date" name="start_date"
+                           min="<?= h($today) ?>" max="<?= h($maxDate) ?>" required
+                           value="<?= h($editCamp['start_date'] ?? '') ?>">
+                </div>
 
-                    <?php
-                    $savedDate = $editCamp[$prefix . '_date'] ?? '';
-                    $parts = $savedDate
-                        ? explode('-', $savedDate)
-                        : ['', '', ''];
-
-                    $savedYear = $parts[0];
-                    $savedMonth = (int)$parts[1];
-                    $savedDay = (int)$parts[2];
-                    ?>
-
-                    <div class="field">
-                        <label><?= h($label) ?></label>
-
-                        <div class="date-parts">
-
-                            <!-- Diena -->
-                            <select name="<?= $prefix ?>_day"
-                                    aria-label="<?= h($label) ?> - diena"
-                                    required>
-                                <option value="">Diena</option>
-
-                                <?php for ($d = 1; $d <= 31; $d++): ?>
-                                    <option value="<?= $d ?>"
-                                        <?= $savedDay === $d ? 'selected' : '' ?>>
-                                        <?= $d ?>
-                                    </option>
-                                <?php endfor; ?>
-                            </select>
-
-                            <!-- Mēnesis -->
-                            <select name="<?= $prefix ?>_month"
-                                    aria-label="<?= h($label) ?> - mēnesis"
-                                    required>
-                                <option value="">Mēnesis</option>
-
-                                <?php foreach ($months as $number => $month): ?>
-                                    <option value="<?= $number ?>"
-                                        <?= $savedMonth === $number ? 'selected' : '' ?>>
-                                        <?= h($month) ?>
-                                    </option>
-                                <?php endforeach; ?>
-                            </select>
-
-                            <!-- Gads -->
-                                <input
-                                type="number"
-                                name="<?= $prefix ?>_year"
-                                aria-label="<?= h($label) ?> - gads"
-                                min="<?= date('Y') ?>"
-                                max="<?= date('Y') + 15 ?>"
-                                placeholder="Gads"
-                                value="<?= h($savedYear) ?>"
-                                required>
-                            </div>
-                        </div>
-
-                <?php endforeach; ?>
+                <div class="field">
+                    <label for="end_date">Beigu datums</label>
+                    <input type="date" id="end_date" name="end_date"
+                           min="<?= h($today) ?>" max="<?= h($maxDate) ?>" required
+                           value="<?= h($editCamp['end_date'] ?? '') ?>">
+                </div>
             </div>
-
 
             <div class="fields-3">
                 <div class="field">
@@ -1073,5 +1005,19 @@ input:focus,textarea:focus {
     </div>
 </main>
 </div>
+<script>
+(() => {
+    const start = document.getElementById('start_date');
+    const end = document.getElementById('end_date');
+    const today = start.min;
+
+    function updateEndMin() {
+        end.min = start.value && start.value > today ? start.value : today;
+    }
+
+    start.addEventListener('input', updateEndMin);
+    updateEndMin();
+})();
+</script>
 </body>
 </html>
