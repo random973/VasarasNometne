@@ -368,6 +368,47 @@ details p {
 }
 
 .footer small { color:#c4c4cc; }
+.footer a { color:#ffd0b6; text-decoration:underline; }
+.footer a:focus-visible,
+.cookie-notice a:focus-visible,
+.cookie-notice button:focus-visible {
+    outline:2px solid #ff9955;
+    outline-offset:3px;
+}
+.cookie-notice {
+    position:fixed;
+    bottom:16px;
+    left:16px;
+    right:16px;
+    z-index:100;
+    max-width:820px;
+    margin:auto;
+    padding:16px 20px;
+    background:#22232a;
+    color:#fff;
+    border:1px solid #55515a;
+    border-radius:14px;
+    box-shadow:0 12px 35px rgba(0,0,0,.2);
+    display:flex;
+    align-items:center;
+    gap:16px;
+}
+.cookie-notice[hidden] { display:none; }
+.cookie-notice p { flex:1; margin:0; font-size:.9rem; }
+.cookie-notice a { color:#ffd0b6; text-decoration:underline; }
+.cookie-notice button {
+    flex-shrink:0;
+    border:0;
+    border-radius:9px;
+    background:#ff9955;
+    color:#22232a;
+    padding:10px 16px;
+    font-weight:750;
+    cursor:pointer;
+}
+@media(max-width:600px) {
+    .cookie-notice { flex-direction:column; align-items:stretch; gap:10px; }
+}
 
 /* Mobilā versija */
 @media(max-width:850px) {
@@ -628,12 +669,31 @@ details p {
         </strong>
 
         <small>
-            Privātuma politika un sīkdatņu informācija —
-            tiks sagatavota pirms publicēšanas.
+            <a href="privatums.php#privatuma-politika">Privātuma politika</a>
+            ·
+            <a href="privatums.php#sikdatnes">Sīkdatņu politika</a>
         </small>
 
     </div>
 </footer>
 
+<aside id="cookie-notice" class="cookie-notice" aria-label="Informācija par sīkdatnēm" hidden>
+    <p><strong>Par sīkdatnēm</strong><br>
+        Administrācijas pieslēgšanās izmanto tehniski nepieciešamās sesijas
+        sīkdatnes. Vietnes kodā nav ieviesta reklāmas vai analītikas izsekošana.
+        <a href="privatums.php#sikdatnes">Uzzināt vairāk</a>
+    </p>
+    <button id="cookie-dismiss" type="button">Sapratu</button>
+</aside>
+<script>
+(() => {
+    const notice = document.getElementById('cookie-notice');
+    const dismiss = document.getElementById('cookie-dismiss');
+    dismiss.addEventListener('click', () => {
+        notice.hidden = true;
+    });
+    notice.hidden = false;
+})();
+</script>
 </body>
 </html>
